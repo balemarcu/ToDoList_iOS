@@ -41,8 +41,20 @@ class ToDoDetailTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        dueDatePicker.date = Date().addingTimeInterval(24*60*60)
-        updateDueDateLabel(date: dueDatePicker.date)
+        let currentDueDate: Date
+        
+        if let toDo = toDo {
+            navigationItem.title = "To-Do"
+            titleTextField.text = toDo.title
+            isCompleteButton.isSelected = toDo.isComplete
+            currentDueDate = toDo.dueDate
+            notesTextView.text = toDo.notes
+        } else {
+            currentDueDate = Date().addingTimeInterval(24*60*60)
+        }
+        
+        dueDatePicker.date = currentDueDate
+        updateDueDateLabel(date: currentDueDate)
         updateSaveButtonState()
         
     }
@@ -89,16 +101,22 @@ class ToDoDetailTableViewController: UITableViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
-        print("breakpoint 1")
+        //print("breakpoint 1")
         guard segue.identifier == "saveUnwind" else { return }
-        print("breakpoint 2")
+        //print("breakpoint 2")
         let title = titleTextField.text!
         let isComplete = isCompleteButton.isSelected
         let dueDate = dueDatePicker.date
         let notes = notesTextView.text
         
-        print("The object is: \(title), \(isComplete), \(dueDate), \(String(describing: notes))")
-        
-        toDo = ToDo(title: title, isComplete: isComplete, dueDate: dueDate, notes: notes)
+        //toDo = ToDo(title: title, isComplete: isComplete, dueDate: dueDate, notes: notes)
+        if toDo != nil {
+            toDo?.title = title
+            toDo?.isComplete = isComplete
+            toDo?.dueDate = dueDate
+            toDo?.notes = notes
+        }else{
+            toDo = ToDo(title: title, isComplete: isComplete, dueDate: dueDate, notes: notes)
+        }
     }
 }
